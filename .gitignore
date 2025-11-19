@@ -1,0 +1,13 @@
+# Ignore raw data files
+data/raw/
+*.csv
+*.zip
+
+# Ignore huge files & checkpoints
+*.ipynb_checkpoints/
+.ipynb_checkpoints/
+*.ipynb_checkpoints
+
+# Ignore python cache
+__pycache__/
+*.pyc
