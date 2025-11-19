@@ -11,7 +11,7 @@ SILVER_DIR = DATA_DIR / "silver"
 GOLD_DIR = DATA_DIR / "gold"
 MODELS_DIR = BASE_DIR / "models"
 
-# Raw Kaggle file (this is the important one)
+# Raw Kaggle file 
 RAW_TRANSACTIONS_PATH = RAW_DIR / "credit_card_transactions.csv"
 
 # Cleaned outputs
