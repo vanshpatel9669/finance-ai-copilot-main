@@ -1,0 +1,8 @@
+```text
+pandas
+numpy
+scikit-learn
+joblib
+matplotlib
+streamlit
+pytest
