@@ -1,8 +1,12 @@
 # AI Personal Finance Copilot
  
 Team Project – AI-powered Personal Finance Assistant
+Team Members - Vansh Patel, Stuti Patel, Ratan Shanmugam Rajeshbabu
 
+Github Link - https://github.com/vanshpatel9669/finance-ai-copilot-main
+For the data download it with this - https://drive.google.com/file/d/1GyGIMOrhuddgUdCtwFRGmXBJXDlT03cD/view?usp=sharing
 
+After downloading the data put that folder in the Project folder where all the python files are there in the structure shown below and run exactly as the steps mentioned below.
 ##  Project Overview
 
 This project is an AI-powered personal finance copilot that:
@@ -45,7 +49,7 @@ Project_AAI/
 
 This project was developed and tested with:
 
-Python 3.11.x
+Python 3.11.x also supports version 3.12 or later and will run perfectly
 
 Install dependencies:
 

@@ -25,7 +25,7 @@ class FinanceAI:
     This class centralizes:
     - Access to the cleaned (gold) transaction data
     - Access to the trained category classification model
-    - Utility methods used by the GUI layer
+    - Utility methods used by the GUI layer (Tkinter or Streamlit).
     """
 
     def __init__(
@@ -58,6 +58,11 @@ class FinanceAI:
         -------
         sklearn.pipeline.Pipeline
             Trained TF-IDF + LogisticRegression pipeline.
+
+        Raises
+        ------
+        FileNotFoundError
+            If the model file does not exist at the specified path.
         """
         if not self.model_path.exists():
             raise FileNotFoundError(
@@ -70,6 +75,11 @@ class FinanceAI:
     def df(self) -> pd.DataFrame:
         """
         Expose the underlying transactions DataFrame (read-only).
+
+        Returns
+        -------
+        pd.DataFrame
+            Copy of the loaded gold-level transaction data.
         """
         return self._df.copy()
 
@@ -86,6 +96,11 @@ class FinanceAI:
         -------
         str
             Predicted category label.
+
+        Raises
+        ------
+        ValueError
+            If description is empty or only whitespace.
         """
         if not description or not description.strip():
             raise ValueError("Description must be a non-empty string.")
