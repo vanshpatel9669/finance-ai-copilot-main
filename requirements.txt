@@ -6,4 +6,4 @@ joblib
 matplotlib
 streamlit
 pytest
-Tkinter
+tkinter
