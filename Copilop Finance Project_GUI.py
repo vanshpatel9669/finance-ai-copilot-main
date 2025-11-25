@@ -75,7 +75,7 @@ class FinanceApp(tk.Tk):
         self.color_main = bg_main
 
     def style_button_hover(self, btn):
-        # add simple hover effect for buttons
+        # this is for adding effect for buttons
         def on_enter(e):
             btn.configure(style="Blue.TButton")
 
@@ -126,7 +126,7 @@ class FinanceApp(tk.Tk):
         btn_path.grid(row=0, column=4, padx=4, pady=2, sticky="w")
         self.style_button_hover(btn_path)
 
-#Filtering the rows
+#To Filtering the rows
         ttk.Label(top, text="Month:", style="SubHeader.TLabel").grid(
             row=1, column=0, pady=(10, 0), sticky="w"
         )
@@ -445,4 +445,5 @@ class FinanceApp(tk.Tk):
 if __name__ == "__main__":
     app = FinanceApp()
     app.mainloop()
+
 
