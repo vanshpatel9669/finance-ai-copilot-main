@@ -1,5 +1,3 @@
-# GUI by: Ratan Shanmugam
-
 import os
 import tkinter as tk
 from tkinter import ttk, filedialog, messagebox
@@ -36,7 +34,7 @@ class FinanceApp(tk.Tk):
         except tk.TclError:
             pass
 
-# Base color used
+# Base color usage
         bg_main = "#f1f5f9"   #this is page background
         bg_card = "#ffffff"   #this is for cards
         blue = "#2563eb"      #primary color used-blue
@@ -69,8 +67,8 @@ class FinanceApp(tk.Tk):
                   background=[("active", blue_dark)])
 
         style.configure("Link.TLabel", foreground=blue, cursor="hand2")
-
-#tostore colors for buttons
+        
+        #tostore colors for buttons
         self.color_blue = blue
         self.color_blue_dark = blue_dark
         self.color_card = bg_card
@@ -106,7 +104,7 @@ class FinanceApp(tk.Tk):
         top.grid(row=1, column=0, sticky="ew")
         top.columnconfigure(9, weight=1)
 
- # Load controls
+ # Loading controls
         ttk.Label(top, text="Load data:", style="SubHeader.TLabel").grid(row=0, column=0, sticky="w")
 
         btn_default = ttk.Button(top, text="Default CSV", style="Blue.TButton",
@@ -128,7 +126,7 @@ class FinanceApp(tk.Tk):
         btn_path.grid(row=0, column=4, padx=4, pady=2, sticky="w")
         self.style_button_hover(btn_path)
 
-#Filters row
+#Filtering the rows
         ttk.Label(top, text="Month:", style="SubHeader.TLabel").grid(
             row=1, column=0, pady=(10, 0), sticky="w"
         )
@@ -447,3 +445,4 @@ class FinanceApp(tk.Tk):
 if __name__ == "__main__":
     app = FinanceApp()
     app.mainloop()
+
