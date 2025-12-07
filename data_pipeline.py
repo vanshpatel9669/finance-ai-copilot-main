@@ -79,7 +79,8 @@ def to_gold(df_silver: pd.DataFrame) -> pd.DataFrame:
     df["type"] = "Debit"
 
     # Description used for NLP
-    df["description"] = df["merchant"] + " " + df["category"].astype(str)
+    # Used only merchant text as description so it generalizes better
+    df["description"] = df["merchant"].astype(str)
 
     # Simple recurring flag: same merchant & amount appears multiple times
     df["is_recurring"] = df.duplicated(subset=["merchant", "amount"], keep=False)
