@@ -12,7 +12,7 @@ class FinanceApp(tk.Tk):
         super().__init__()
 
         self.title("AI Personal Finance Dashboard")
-        self.geometry("1100x700")
+        self.geometry("1100x720")
         self.minsize(950, 600)
 
         # main data holders
@@ -23,10 +23,16 @@ class FinanceApp(tk.Tk):
         self.chart_option = tk.StringVar(value="Daily Spending")
         self.manual_path = tk.StringVar()
 
+        # metric vars
+        self.efficiency_value_var = tk.StringVar(value="N/A")
+        self.efficiency_desc_var = tk.StringVar(
+            value="Load data to calculate spending efficiency."
+        )
+
         self._setup_style()
         self._build_ui()
 
-# Style
+    # Style
     def _setup_style(self):
         style = ttk.Style(self)
         try:
@@ -34,10 +40,10 @@ class FinanceApp(tk.Tk):
         except tk.TclError:
             pass
 
-# Base color usage
-        bg_main = "#f1f5f9"   #this is page background
-        bg_card = "#ffffff"   #this is for cards
-        blue = "#2563eb"      #primary color used-blue
+        # Base colors
+        bg_main = "#f1f5f9"   # page background
+        bg_card = "#ffffff"   # cards
+        blue = "#2563eb"      # primary blue
         blue_dark = "#1d4ed8"
 
         self.configure(bg=bg_main)
@@ -56,26 +62,27 @@ class FinanceApp(tk.Tk):
         )
         style.configure("Card.TLabelframe.Label", background=bg_card, foreground="#0f172a")
 
-        style.configure("Blue.TButton",
-                        background=blue,
-                        foreground="white",
-                        borderwidth=0,
-                        focusthickness=3,
-                        focuscolor=bg_main,
-                        padding=5)
-        style.map("Blue.TButton",
-                  background=[("active", blue_dark)])
+        style.configure(
+            "Blue.TButton",
+            background=blue,
+            foreground="white",
+            borderwidth=0,
+            focusthickness=3,
+            focuscolor=bg_main,
+            padding=5,
+        )
+        style.map("Blue.TButton", background=[("active", blue_dark)])
 
         style.configure("Link.TLabel", foreground=blue, cursor="hand2")
-        
-        #tostore colors for buttons
+
+        # store colors
         self.color_blue = blue
         self.color_blue_dark = blue_dark
         self.color_card = bg_card
         self.color_main = bg_main
 
     def style_button_hover(self, btn):
-        # this is for adding effect for buttons
+        #Effects for buttons 
         def on_enter(e):
             btn.configure(style="Blue.TButton")
 
@@ -85,34 +92,43 @@ class FinanceApp(tk.Tk):
         btn.bind("<Enter>", on_enter)
         btn.bind("<Leave>", on_leave)
 
-# UI Build
+    # UI Build
     def _build_ui(self):
         self.columnconfigure(0, weight=1)
         self.rowconfigure(2, weight=1)
 
- # Header
+        # Header
         header = ttk.Frame(self, padding=15)
         header.grid(row=0, column=0, sticky="ew")
-        ttk.Label(header, text="💰 AI Finance Copilot — Analytics Dashboard",
-                  style="Header.TLabel").grid(row=0, column=0, sticky="w")
-        ttk.Label(header,
-                  text="Visualize your spending by month, category, and merchant.",
-                  style="TLabel").grid(row=1, column=0, sticky="w", pady=(2, 0))
+        ttk.Label(
+            header,
+            text="💰 AI Finance Copilot — Analytics Dashboard",
+            style="Header.TLabel",
+        ).grid(row=0, column=0, sticky="w")
+        ttk.Label(
+            header,
+            text="Load a CSV of your transactions, then filter by month and explore spending by category and merchant.",
+            style="TLabel",
+        ).grid(row=1, column=0, sticky="w", pady=(2, 0))
 
-#Top Controls
+        # Top Controls
         top = ttk.Frame(self, padding=(15, 5, 15, 10))
         top.grid(row=1, column=0, sticky="ew")
         top.columnconfigure(9, weight=1)
 
- # Loading controls
-        ttk.Label(top, text="Load data:", style="SubHeader.TLabel").grid(row=0, column=0, sticky="w")
+        # Load controls
+        ttk.Label(top, text="Load data:", style="SubHeader.TLabel").grid(
+            row=0, column=0, sticky="w"
+        )
 
-        btn_default = ttk.Button(top, text="Default CSV", style="Blue.TButton",
-                                 command=self.load_default_csv)
+        btn_default = ttk.Button(
+            top, text="Default CSV", style="Blue.TButton", command=self.load_default_csv
+        )
         btn_default.grid(row=0, column=1, padx=4, pady=2, sticky="w")
 
-        btn_browse = ttk.Button(top, text="Browse…", style="Blue.TButton",
-                                command=self.open_file_dialog)
+        btn_browse = ttk.Button(
+            top, text="Browse…", style="Blue.TButton", command=self.open_file_dialog
+        )
         btn_browse.grid(row=0, column=2, padx=4, pady=2, sticky="w")
 
         self.style_button_hover(btn_default)
@@ -121,22 +137,25 @@ class FinanceApp(tk.Tk):
         ttk.Entry(top, textvariable=self.manual_path, width=36).grid(
             row=0, column=3, padx=(20, 4), pady=2, sticky="w"
         )
-        btn_path = ttk.Button(top, text="Load Path", style="Blue.TButton",
-                              command=self.load_path_file)
+        btn_path = ttk.Button(
+            top, text="Load Path", style="Blue.TButton", command=self.load_path_file
+        )
         btn_path.grid(row=0, column=4, padx=4, pady=2, sticky="w")
         self.style_button_hover(btn_path)
 
-#To Filtering the rows
+        # Filters row
         ttk.Label(top, text="Month:", style="SubHeader.TLabel").grid(
             row=1, column=0, pady=(10, 0), sticky="w"
         )
-        self.month_box = ttk.Combobox(top, textvariable=self.current_month,
-                                      state="readonly", width=15)
+        self.month_box = ttk.Combobox(
+            top, textvariable=self.current_month, state="readonly", width=15
+        )
         self.month_box.grid(row=1, column=1, pady=(10, 0), sticky="w")
         self.month_box.bind("<<ComboboxSelected>>", lambda e: self.filter_data())
 
-        btn_all_months = ttk.Button(top, text="All Months", style="Blue.TButton",
-                                    command=self.reset_month)
+        btn_all_months = ttk.Button(
+            top, text="All Months", style="Blue.TButton", command=self.reset_month
+        )
         btn_all_months.grid(row=1, column=2, pady=(10, 0), padx=4, sticky="w")
         self.style_button_hover(btn_all_months)
 
@@ -153,34 +172,90 @@ class FinanceApp(tk.Tk):
         self.chart_box.grid(row=1, column=4, pady=(10, 0), sticky="w")
         self.chart_box.bind("<<ComboboxSelected>>", lambda e: self.draw_chart())
 
-        btn_refresh = ttk.Button(top, text="Refresh", style="Blue.TButton",
-                                 command=self.filter_data)
+        btn_refresh = ttk.Button(
+            top, text="Refresh", style="Blue.TButton", command=self.filter_data
+        )
         btn_refresh.grid(row=1, column=5, padx=4, pady=(10, 0), sticky="w")
         self.style_button_hover(btn_refresh)
 
-# Summary text
-        self.summary_var = tk.StringVar(value="Load a CSV to begin.")
-        ttk.Label(top, textvariable=self.summary_var,
-                  style="SubHeader.TLabel").grid(
-            row=2, column=0, columnspan=6, pady=(10, 0), sticky="w"
+        # Help / Instructions button
+        btn_help = ttk.Button(
+            top, text="Help / Instructions", style="Blue.TButton", command=self.show_help
+        )
+        btn_help.grid(row=1, column=6, padx=(20, 0), pady=(10, 0), sticky="w")
+        self.style_button_hover(btn_help)
+
+        # Summary text
+        self.summary_var = tk.StringVar(
+            value=(
+                "Step 1: Load a CSV using the buttons above. "
+                "Step 2: Choose a month (or 'All Months'). "
+                "Step 3: Pick a chart type to explore your spending."
+            )
+        )
+        ttk.Label(top, textvariable=self.summary_var, style="SubHeader.TLabel").grid(
+            row=2, column=0, columnspan=7, pady=(10, 0), sticky="w"
         )
 
- #main content
+        # For Overall Spending Efficiency card 
+        efficiency_frame = ttk.Labelframe(
+            top,
+            text="Overall Spending Efficiency",
+            style="Card.TLabelframe",
+            padding=10,
+        )
+        efficiency_frame.grid(row=3, column=0, columnspan=7, pady=(10, 0), sticky="ew")
+        efficiency_frame.columnconfigure(0, weight=1)
+        efficiency_frame.columnconfigure(1, weight=3)
+
+        # Big percentage value
+        ttk.Label(
+            efficiency_frame,
+            textvariable=self.efficiency_value_var,
+            background=self.color_card,
+            font=("Segoe UI", 18, "bold"),
+        ).grid(row=0, column=0, rowspan=2, sticky="w", padx=(0, 15))
+
+        # Explanation text
+        ttk.Label(
+            efficiency_frame,
+            textvariable=self.efficiency_desc_var,
+            background=self.color_card,
+            wraplength=600,
+            justify="left",
+        ).grid(row=0, column=1, sticky="w")
+
+        ttk.Label(
+            efficiency_frame,
+            text=(
+                "Definition: % of total spending that goes to essential categories "
+                "(Rent, Housing, Utilities, Groceries, Insurance, Healthcare, "
+                "Transport, Gas, Education). Higher = more efficient use of money."
+            ),
+            background=self.color_card,
+            foreground="#475569",
+            wraplength=600,
+            justify="left",
+        ).grid(row=1, column=1, sticky="w", pady=(4, 0))
+
+        # main content
         main = ttk.Frame(self, padding=(15, 0, 15, 15))
         main.grid(row=2, column=0, sticky="nsew")
         main.columnconfigure(0, weight=1)
         main.columnconfigure(1, weight=2)
         main.rowconfigure(0, weight=1)
 
-# LEFT side table
+        # LEFT side table & instructions
         left = ttk.Frame(main)
         left.grid(row=0, column=0, sticky="nsew", padx=(0, 10))
         left.rowconfigure(1, weight=1)
         left.rowconfigure(3, weight=1)
         left.columnconfigure(0, weight=1)
 
-# Categories card
-        cat_group = ttk.Labelframe(left, text="Top Categories", style="Card.TLabelframe", padding=10)
+        # Categories card
+        cat_group = ttk.Labelframe(
+            left, text="Top Categories", style="Card.TLabelframe", padding=10
+        )
         cat_group.grid(row=0, column=0, sticky="nsew", pady=(0, 10))
         cat_group.columnconfigure(0, weight=1)
         cat_group.rowconfigure(0, weight=1)
@@ -189,7 +264,7 @@ class FinanceApp(tk.Tk):
             cat_group,
             columns=("cat", "amt"),
             show="headings",
-            height=6
+            height=6,
         )
         self.cat_table.heading("cat", text="Category")
         self.cat_table.heading("amt", text="Total ($)")
@@ -197,14 +272,16 @@ class FinanceApp(tk.Tk):
         self.cat_table.column("amt", width=80, anchor="e")
         self.cat_table.grid(row=0, column=0, sticky="nsew")
 
-        cat_scroll = ttk.Scrollbar(cat_group, orient="vertical",
-                                   command=self.cat_table.yview)
+        cat_scroll = ttk.Scrollbar(
+            cat_group, orient="vertical", command=self.cat_table.yview
+        )
         self.cat_table.configure(yscrollcommand=cat_scroll.set)
         cat_scroll.grid(row=0, column=1, sticky="ns")
 
-#Merchants card
-        merch_group = ttk.Labelframe(left, text="Recurring Merchants",
-                                     style="Card.TLabelframe", padding=10)
+        # Merchants card
+        merch_group = ttk.Labelframe(
+            left, text="Recurring Merchants", style="Card.TLabelframe", padding=10
+        )
         merch_group.grid(row=2, column=0, sticky="nsew")
         merch_group.columnconfigure(0, weight=1)
         merch_group.rowconfigure(0, weight=1)
@@ -223,14 +300,58 @@ class FinanceApp(tk.Tk):
         self.merch_table.column("amt", width=90, anchor="e")
         self.merch_table.grid(row=0, column=0, sticky="nsew")
 
-        merch_scroll = ttk.Scrollbar(merch_group, orient="vertical",
-                                     command=self.merch_table.yview)
+        merch_scroll = ttk.Scrollbar(
+            merch_group, orient="vertical", command=self.merch_table.yview
+        )
         self.merch_table.configure(yscrollcommand=merch_scroll.set)
         merch_scroll.grid(row=0, column=1, sticky="ns")
 
-# right side chart
-        chart_group = ttk.Labelframe(main, text="Spending Chart",
-                                     style="Card.TLabelframe", padding=10)
+        # Instructions card
+        instr_group = ttk.Labelframe(
+            left, text="How to Use This Dashboard", style="Card.TLabelframe", padding=10
+        )
+        instr_group.grid(row=4, column=0, sticky="nsew", pady=(10, 0))
+        instr_group.columnconfigure(0, weight=1)
+
+        ttk.Label(
+            instr_group,
+            text="1. Click 'Default CSV' or 'Browse…' to load your transactions CSV.",
+            background=self.color_card,
+            wraplength=320,
+            justify="left",
+        ).grid(row=0, column=0, sticky="w", pady=(0, 4))
+
+        ttk.Label(
+            instr_group,
+            text="2. Use the Month dropdown to filter to a specific month or show all months.",
+            background=self.color_card,
+            wraplength=320,
+            justify="left",
+        ).grid(row=1, column=0, sticky="w", pady=(0, 4))
+
+        ttk.Label(
+            instr_group,
+            text="3. Pick a Chart type:\n   • Daily Spending = line over time\n   • Top Categories = bar by category\n   • Top Merchants = bar by merchant.",
+            background=self.color_card,
+            wraplength=320,
+            justify="left",
+        ).grid(row=2, column=0, sticky="w", pady=(0, 4))
+
+        ttk.Label(
+            instr_group,
+            text=(
+                "4. Read the tables above to see which categories and recurring "
+                "merchants you spend the most on."
+            ),
+            background=self.color_card,
+            wraplength=320,
+            justify="left",
+        ).grid(row=3, column=0, sticky="w")
+
+        # right side chart
+        chart_group = ttk.Labelframe(
+            main, text="Spending Chart", style="Card.TLabelframe", padding=10
+        )
         chart_group.grid(row=0, column=1, sticky="nsew")
         chart_group.rowconfigure(0, weight=1)
         chart_group.columnconfigure(0, weight=1)
@@ -240,7 +361,35 @@ class FinanceApp(tk.Tk):
         self.canvas = FigureCanvasTkAgg(self.fig, master=chart_group)
         self.canvas.get_tk_widget().grid(row=0, column=0, sticky="nsew")
 
-#Data Loading
+    # Help popup with instructions button.
+    def show_help(self):
+        help_text = (
+            "HOW TO USE THIS DASHBOARD\n\n"
+            "1) Load data:\n"
+            "   • Click 'Default CSV' to load the sample dataset, OR\n"
+            "   • Click 'Browse…' and choose your own CSV file with columns "
+            "     'date', 'amount', 'category', and 'merchant'.\n\n"
+            "2) Filter by month:\n"
+            "   • Use the 'Month' dropdown to select a specific month.\n"
+            "   • Click 'All Months' to see everything.\n\n"
+            "3) Choose a chart:\n"
+            "   • Daily Spending: total spent per day over time.\n"
+            "   • Top Categories: which categories you spend the most on.\n"
+            "   • Top Merchants: which merchants you spend the most at.\n\n"
+            "4) Overall Spending Efficiency:\n"
+            "   • This is the percentage of your total spending that goes to "
+            "     essential categories (Rent, Housing, Utilities, Groceries, "
+            "     Insurance, Healthcare, Transport, Gas, Education).\n"
+            "   • Higher values mean more of your money is going to needs "
+            "     rather than wants.\n\n"
+            "5) Read the tables on the left:\n"
+            "   • 'Top Categories' shows the 10 highest-spend categories.\n"
+            "   • 'Recurring Merchants' shows merchants you pay frequently "
+            "     (3+ transactions marked as recurring).\n"
+        )
+        messagebox.showinfo("Dashboard Instructions", help_text)
+
+    # Data Loading
     def load_default_csv(self):
         base = os.path.dirname(os.path.abspath(__file__))
         path = os.path.join(base, "data", "gold", "transactions_gold.csv")
@@ -249,7 +398,7 @@ class FinanceApp(tk.Tk):
     def open_file_dialog(self):
         p = filedialog.askopenfilename(
             title="Select CSV file",
-            filetypes=[("CSV files", "*.csv"), ("All files", "*.*")]
+            filetypes=[("CSV files", "*.csv"), ("All files", "*.*")],
         )
         if p:
             self.manual_path.set(p)
@@ -270,7 +419,9 @@ class FinanceApp(tk.Tk):
             return
 
         if "date" not in df.columns or "amount" not in df.columns:
-            messagebox.showerror("Invalid CSV", "CSV must have 'date' and 'amount' columns.")
+            messagebox.showerror(
+                "Invalid CSV", "CSV must have 'date' and 'amount' columns."
+            )
             return
 
         df["date"] = pd.to_datetime(df["date"], errors="coerce")
@@ -296,7 +447,7 @@ class FinanceApp(tk.Tk):
         self.month_box["values"] = months
         self.current_month.set("All")
 
-# Filtering & summary
+    # Filtering & summary
     def reset_month(self):
         if self.df is not None:
             self.current_month.set("All")
@@ -322,11 +473,62 @@ class FinanceApp(tk.Tk):
             f"Showing {count} transactions for {label} • Total spending: ${total:,.2f}"
         )
 
+        # update KPI card
+        self._update_efficiency_card()
+
         self._load_category_table()
         self._load_merchant_table()
         self.draw_chart()
 
-# Tables
+    # For calculating overall Spending Efficiency 
+    def _update_efficiency_card(self):
+        """
+        Overall Spending Efficiency (%) =
+        (Essential Spending / Total Spending) * 100
+
+        Essential categories:
+        Rent, Housing, Utilities, Groceries, Insurance,
+        Healthcare, Transport, Gas, Education
+        """
+        if self.filtered_df is None or self.filtered_df.empty:
+            self.efficiency_value_var.set("N/A")
+            self.efficiency_desc_var.set("Load data to calculate spending efficiency.")
+            return
+
+        total = self.filtered_df["amount"].sum()
+        if total <= 0:
+            self.efficiency_value_var.set("N/A")
+            self.efficiency_desc_var.set("Total spending is zero or missing.")
+            return
+
+        essential_cats = {
+            "Rent",
+            "Housing",
+            "Utilities",
+            "Groceries",
+            "Insurance",
+            "Healthcare",
+            "Health",
+            "Transport",
+            "Transportation",
+            "Gas",
+            "Fuel",
+            "Education",
+        }
+
+        #Matching by exact category label and others as non-essential
+        essential_spend = self.filtered_df[
+            self.filtered_df["category"].isin(essential_cats)
+        ]["amount"].sum()
+
+        efficiency = (essential_spend / total) * 100
+
+        self.efficiency_value_var.set(f"{efficiency:,.1f}%")
+        self.efficiency_desc_var.set(
+            f"${essential_spend:,.2f} of ${total:,.2f} is going to essential categories."
+        )
+
+    # Tables
     def _load_category_table(self):
         for i in self.cat_table.get_children():
             self.cat_table.delete(i)
@@ -369,11 +571,12 @@ class FinanceApp(tk.Tk):
 
         for m, row in grouped.iterrows():
             self.merch_table.insert(
-                "", tk.END,
-                values=(m, int(row["count"]), f"{row['amt']:,.2f}")
+                "",
+                tk.END,
+                values=(m, int(row["count"]), f"{row['amt']:,.2f}"),
             )
 
-#chart
+    # chart
     def draw_chart(self):
         self.ax.clear()
 
@@ -392,7 +595,7 @@ class FinanceApp(tk.Tk):
                 .head(8)
             )
             if not data.empty:
-# category color mapping
+                # category color mapping
                 color_map = {
                     "Food": "#facc15",
                     "Groceries": "#22c55e",
@@ -421,7 +624,8 @@ class FinanceApp(tk.Tk):
                 self.ax.set_title("Top Merchants by Spending")
                 self.ax.set_ylabel("Total ($)")
                 self.ax.set_xticklabels(data.index, rotation=45, ha="right")
-# Daily Spending
+
+        # Daily Spending
         else:
             daily = (
                 self.filtered_df.groupby(self.filtered_df["date"].dt.date)["amount"]
@@ -435,7 +639,9 @@ class FinanceApp(tk.Tk):
                 self.ax.set_ylabel("Total ($)")
                 self.ax.set_xticks(range(len(x_vals)))
                 step = max(1, len(x_vals) // 8)
-                labels = [str(d) if i % step == 0 else "" for i, d in enumerate(x_vals)]
+                labels = [
+                    str(d) if i % step == 0 else "" for i, d in enumerate(x_vals)
+                ]
                 self.ax.set_xticklabels(labels, rotation=45, ha="right")
 
         self.fig.tight_layout()
@@ -445,5 +651,3 @@ class FinanceApp(tk.Tk):
 if __name__ == "__main__":
     app = FinanceApp()
     app.mainloop()
-
-
